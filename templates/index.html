@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mock Data Generator</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="shell">
+
+  <!-- ── Sidebar ── -->
+  <aside class="sidebar">
+    <div>
+      <p class="logo">v2.0</p>
+      <h1>Mock<span>Data</span><br>Generator</h1>
+    </div>
+
+    <div>
+      <p class="section-label">Entity</p>
+      <div class="entity-grid" id="entity-grid">
+        <button class="entity-btn active" data-entity="users">👤 Users</button>
+        <button class="entity-btn" data-entity="companies">🏢 Companies</button>
+        <button class="entity-btn" data-entity="products">📦 Products</button>
+        <button class="entity-btn" data-entity="transactions">💳 Transactions</button>
+      </div>
+    </div>
+
+    <div>
+      <div class="ctrl-row">
+        <label>Записей (1 – 1000)</label>
+        <input type="number" id="count" value="5" min="1" max="1000">
+      </div>
+      <div class="ctrl-row">
+        <label>Локаль</label>
+        <select id="locale">
+          <option value="ru_RU">🇷🇺 Русский</option>
+          <option value="en_US">🇺🇸 English</option>
+          <option value="uk_UA">🇺🇦 Українська</option>
+        </select>
+      </div>
+      <div class="ctrl-row">
+        <label>Формат</label>
+        <div class="fmt-row" id="fmt-row">
+          <button class="fmt-btn active" data-fmt="json">JSON</button>
+          <button class="fmt-btn" data-fmt="csv">CSV</button>
+          <button class="fmt-btn" data-fmt="xml">XML</button>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <button class="gen-btn" onclick="generateData()">⚡ Сгенерировать</button>
+      <button class="secondary-btn" onclick="downloadData()">⬇ Скачать файл</button>
+      <button class="secondary-btn" onclick="loadSchema()">📋 Показать схему</button>
+      <button class="secondary-btn" onclick="clearResult()">✕ Очистить</button>
+    </div>
+
+    <!-- Custom schema -->
+    <div>
+      <div class="schema-toggle" onclick="toggleSchema()">
+        <span>Custom JSON Schema</span>
+        <span class="toggle-icon" id="toggle-icon">▾</span>
+      </div>
+      <div id="schema-area">
+        <textarea id="schema-input" placeholder='{
+  "type": "object",
+  "properties": {
+    "id":    { "format": "uuid" },
+    "name":  { "format": "name" },
+    "score": { "type": "integer",
+               "minimum": 0,
+               "maximum": 100 },
+    "role":  { "enum": ["admin","user"] }
+  }
+}'></textarea>
+        <button class="secondary-btn" style="margin-top:0.5rem" onclick="generateCustom()">
+          ▶ Выполнить схему
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── Main ── -->
+  <main class="main">
+
+    <div class="stats-bar">
+      <div class="stat-pill">
+        <div class="dot idle" id="status-dot"></div>
+        <span class="s-label">Статус</span>
+        <span class="s-value" id="status-text">Готов</span>
+      </div>
+      <div class="stat-pill">
+        <span class="s-label">Записей</span>
+        <span class="s-value" id="stat-count">—</span>
+      </div>
+      <div class="stat-pill">
+        <span class="s-label">Время</span>
+        <span class="s-value" id="stat-time">—</span>
+      </div>
+      <div class="stat-pill">
+        <span class="s-label">Размер</span>
+        <span class="s-value" id="stat-size">—</span>
+      </div>
+    </div>
+
+    <div class="url-bar" id="url-display">
+      <span class="method">GET</span><span id="url-text">/api/users?count=5&amp;locale=ru_RU&amp;format=json</span>
+    </div>
+
+    <div class="result-wrap">
+      <div class="result-header">
+        <div class="result-header-left">
+          <div class="dot-r" style="background:#ff5f56"></div>
+          <div class="dot-r" style="background:#ffbd2e"></div>
+          <div class="dot-r" style="background:#27c93f"></div>
+        </div>
+        <button class="copy-btn" onclick="copyResult()">COPY</button>
+      </div>
+      <div class="result-body">
+        <pre id="result">// Нажмите "Сгенерировать" для получения данных
+// или выберите Custom JSON Schema снизу слева</pre>
+      </div>
+    </div>
+
+    <div class="endpoints">
+      <h3>API Endpoints</h3>
+      <div class="ep-list">
+        <div class="ep"><span class="badge get">GET</span><span class="ep-url">/api/{entity}?count=5&amp;locale=ru_RU&amp;format=json</span></div>
+        <div class="ep"><span class="s-label" style="font-size:0.68rem;color:#9b9890;padding-left:3rem">entity: users · companies · products · transactions</span></div>
+        <div class="ep"><span class="badge post">POST</span><span class="ep-url">/api/custom?count=5&amp;format=json</span><span class="ep-desc"> — произвольная JSON Schema в теле</span></div>
+        <div class="ep"><span class="badge get">GET</span><span class="ep-url">/api/schema/{entity}</span><span class="ep-desc"> — посмотреть схему сущности</span></div>
+        <div class="ep"><span class="badge get">GET</span><span class="ep-url">/health</span><span class="ep-desc"> — статус сервера</span></div>
+        <div class="ep"><span class="badge get">GET</span><span class="ep-url">/docs</span><span class="ep-desc"> — Swagger UI</span></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script src="/static/app.js"></script>
+</body>
+</html>
